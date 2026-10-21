@@ -1,7 +1,7 @@
 pipeline {
     agent any
-    environment {
-        WEBSERVER = "Nginx"
+    parameters {
+        choice(name: 'WEBSERVER', choices: ['Apache', 'Nginx'], description: 'Select the web server for deployment')
     }
 
     options {
@@ -19,7 +19,6 @@ pipeline {
             }
         }
         stage('Drop the Apache HTTPD Docker container'){
-            when { environment name: 'WEBSERVER', value: 'Apache' }
             steps {
             echo 'droping the container...'
             sh '''
@@ -47,7 +46,6 @@ pipeline {
         }
 
         stage('Drop the Nginx Docker container'){
-            when { environment name: 'WEBSERVER', value: 'Nginx' }
             steps {
             echo 'droping the container...'
             sh '''
