@@ -18,12 +18,15 @@ pipeline {
                 sh 'docker volume create jenkins_web'
             }
         }
-        stage('Drop the Apache HTTPD Docker container'){
+        stage('Cleanup existing web server containers') {
             steps {
-            echo 'droping the container...'
+            echo 'Removing existing web server containers...'
             sh '''
                 if docker container inspect apache1 > /dev/null 2>&1; then
                     docker rm -f apache1
+                fi
+                if docker container inspect nginx1 > /dev/null 2>&1; then
+                    docker rm -f nginx1
                 fi
             '''
             }
@@ -42,17 +45,6 @@ pipeline {
                 sh 'docker run --rm --volumes-from apache1 httpd:2.4 find /usr/local/apache2/htdocs -mindepth 1 -delete'
                 sh 'docker cp web/. apache1:/usr/local/apache2/htdocs/'
                 sh 'docker start apache1'
-            }
-        }
-
-        stage('Drop the Nginx Docker container'){
-            steps {
-            echo 'droping the container...'
-            sh '''
-                if docker container inspect nginx1 > /dev/null 2>&1; then
-                    docker rm -f nginx1
-                fi
-            '''
             }
         }
         stage('Create the Nginx container') {
