@@ -7,19 +7,11 @@ pipeline {
     stages {
         stage('Prepare deployment')
         {
-            input {
-              message 'Enter the data'
-              parameters {
-                    string(name:'AUTHOR', defaultValue: 'Sergio', description: 'Author of the web application deployment ')
-                    string(name:'ENVIRONMENT', defaultValue: 'Development',description: 'Environment to deploy')
-                 }
-            }
+            
             steps{
-                echo "The responsible of this project is ${AUTHOR} and and will be deployed in ${ENVIRONMENT}"
                 sh 'docker info > /dev/null'
                 sh 'test -f web/index.html'
                 sh 'docker volume create jenkins_web'
-                
             }
         }
         stage('Drop the Apache HTTPD Docker container'){
@@ -51,6 +43,14 @@ pipeline {
                 echo 'Testing the web app'
                 sh 'curl --fail --silent --show-error --retry 10 --retry-connrefused --retry-delay 2 --max-time 10 --output /dev/null http://host.docker.internal:9000/'
             }
-        }       
+        }
+        post {
+            success {
+                echo 'Deployment succeeded!'
+            }
+            failure {
+                echo 'Deployment failed!'
+            }
+        }
     }
 }
