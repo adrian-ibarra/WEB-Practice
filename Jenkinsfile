@@ -44,7 +44,9 @@ pipeline {
                 sh 'curl --fail --silent --show-error --retry 10 --retry-connrefused --retry-delay 2 --max-time 10 --output /dev/null http://host.docker.internal:9000/'
             }
         }
-        post {
+        
+    }
+    post {
             success {
                 echo 'Deployment succeeded!'
             }
@@ -52,5 +54,4 @@ pipeline {
                 echo 'Deployment failed!'
             }
         }
-    }
 }
